@@ -3,6 +3,7 @@ package metadataserver
 import (
 	"net/http"
 
+	"github.com/djdongjin/app-metadata-server/common"
 	"github.com/djdongjin/app-metadata-server/persisters"
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +23,7 @@ func (server *ApiServer) PersistMetadata(c *gin.Context) {
 		return
 	}
 
-	metadata, err := YamlStringToMetadata(string(reqBody))
+	metadata, err := common.YamlStringToMetadata(string(reqBody))
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -56,7 +57,7 @@ func (server *ApiServer) RetrieveMetadata(c *gin.Context) {
 
 	var res string
 	for _, md := range allMetadata {
-		res += MetadataToYamlString(md) + "\n\n"
+		res += common.MetadataToYamlString(md) + "\n\n"
 	}
 
 	c.String(http.StatusOK, res)
@@ -68,7 +69,7 @@ func (server *ApiServer) GetMetadata(c *gin.Context) {
 	title := c.Param("title")
 
 	if metadata, ok := server.DataStore.Get(title); ok {
-		c.String(http.StatusOK, MetadataToYamlString(metadata))
+		c.String(http.StatusOK, common.MetadataToYamlString(metadata))
 	} else {
 		c.String(http.StatusNotFound, "Metadata not found.")
 	}
@@ -80,7 +81,7 @@ func (server *ApiServer) DeleteMetadata(c *gin.Context) {
 	title := c.Param("title")
 
 	if metadata, ok := server.DataStore.Delete(title); ok {
-		c.String(http.StatusOK, "Medadata deleted: \n\n"+MetadataToYamlString(metadata))
+		c.String(http.StatusOK, "Medadata deleted: \n\n"+common.MetadataToYamlString(metadata))
 	} else {
 		c.String(http.StatusNotFound, "Metadata not found.")
 	}

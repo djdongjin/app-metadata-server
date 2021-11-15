@@ -115,7 +115,6 @@ func ExecuteQuery(metadata Metadata, subqueries []SubQuery) bool {
 // generalCompare is a helper function that does the actual comparision given
 // all necessary components.
 func generalCompare(actual, op, given string) bool {
-	fmt.Printf("%v\t%v\t%v\n", actual, op, given)
 	switch op {
 	case "!=":
 		return actual != given

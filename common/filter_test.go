@@ -4,6 +4,25 @@ import (
 	"testing"
 )
 
+const validYaml = `
+title: Valid App 1
+version: 0.0.1
+maintainers:
+- name: firstmaintainer app1
+  email: firstmaintainer@hotmail.com
+- name: secondmaintainer app1
+  email: secondmaintainer@gmail.com
+company: Random Inc.
+website: https://website.com
+source: https://github.com/random/repo
+license: Apache-2.0
+description: |
+ ### Interesting Title
+ Some application content, and description
+`
+
+const validQuery = "title = Valid App 1,version != 0.0.2"
+
 func compareSubQuerySlice(s1, s2 []SubQuery) bool {
 	if len(s1) != len(s2) {
 		return false
@@ -19,13 +38,12 @@ func compareSubQuerySlice(s1, s2 []SubQuery) bool {
 }
 
 func TestParseQuery(t *testing.T) {
-	valid := "title = Valid App 1,version != 0.0.2"
 	res := []SubQuery{
 		{"title", "=", "Valid App 1"},
 		{"version", "!=", "0.0.2"},
 	}
 
-	subs, err := ParseQuery(valid)
+	subs, err := ParseQuery(validQuery)
 	if err != nil {
 		t.Fatalf("ParseQuery failed, no err should be returned. Error: %v", err.Error())
 	}
@@ -37,5 +55,13 @@ func TestParseQuery(t *testing.T) {
 	subs, err = ParseQuery(invalid)
 	if err == nil {
 		t.Fatalf("ParseQuery should fail on query %v", invalid)
+	}
+}
+
+func TestExecuteQuery(t *testing.T) {
+	md, _ := YamlStringToMetadata(validYaml)
+	subqueries, _ := ParseQuery(validQuery)
+	if !ExecuteQuery(md, subqueries) {
+		t.Fatalf("ExecuteQuery failed.")
 	}
 }
