@@ -46,7 +46,7 @@ func (p InMemoryPersister) Delete(title string) (common.Metadata, bool) {
 func New(tp string) (Persister, error) {
 	switch tp {
 	case "InMemoryPersister":
-		return InMemoryPersister{}, nil
+		return InMemoryPersister{data: make(map[string]common.Metadata)}, nil
 	default:
 		return nil, fmt.Errorf("%s type doesn't exist", tp)
 	}
