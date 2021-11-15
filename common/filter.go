@@ -102,7 +102,7 @@ func ExecuteQuery(metadata Metadata, subqueries []SubQuery) bool {
 				actual = metadata.License
 			}
 
-			if !generalCompare(actual, sub.Op, sub.Value) {
+			if !stringCompare(actual, sub.Op, sub.Value) {
 				return false
 			}
 		}
@@ -112,9 +112,9 @@ func ExecuteQuery(metadata Metadata, subqueries []SubQuery) bool {
 	return true
 }
 
-// generalCompare is a helper function that does the actual comparision given
+// stringCompare is a helper function that does the actual comparision given
 // all necessary components.
-func generalCompare(actual, op, given string) bool {
+func stringCompare(actual, op, given string) bool {
 	switch op {
 	case "!=":
 		return actual != given
@@ -124,8 +124,8 @@ func generalCompare(actual, op, given string) bool {
 	return false
 }
 
-// maintainerCompare is similar to generalCompare. Since Maintainer is a struct,
-// we need another wrapper on top of generalCompare to obtain the actual value.
+// maintainerCompare is similar to stringCompare. Since Maintainer is a struct,
+// we need another wrapper on top of stringCompare to obtain the actual value.
 // Also since a metadata has multiple Maintainer, we assume the comparision
 // returns true as long as it returns true on one Maintainer.
 func maintainerCompare(maintainers []Maintainer, key, op, given string) bool {
@@ -138,7 +138,7 @@ func maintainerCompare(maintainers []Maintainer, key, op, given string) bool {
 			actual = m.Email
 		}
 
-		if generalCompare(actual, op, given) {
+		if stringCompare(actual, op, given) {
 			return true
 		}
 	}
