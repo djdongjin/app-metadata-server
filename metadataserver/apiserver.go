@@ -19,15 +19,18 @@ func (server *ApiServer) PersistMetadata(c *gin.Context) {
 	reqBody, err := c.GetRawData()
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	metadata, err := YamlStringToMetadata(string(reqBody))
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	if err = metadata.Validate(); err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	_ = server.DataStore.Persist(metadata)
@@ -42,6 +45,7 @@ func (server *ApiServer) RetrieveMetadata(c *gin.Context) {
 	queryBody, err := c.GetRawData()
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	allMetadata := server.DataStore.Retrieve(string(queryBody))

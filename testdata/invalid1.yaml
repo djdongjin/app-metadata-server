@@ -1,12 +1,12 @@
-title: Valid App 2
+title: App w/ Invalid maintainer email
 version: 1.0.1
 maintainers:
-- name: AppTwo Maintainer
-  email: apptwo@hotmail.com
+- name: Firstname Lastname
+  email: apptwohotmail.com
 company: Upbound Inc.
 website: https://upbound.io
 source: https://github.com/upbound/repo
 license: Apache-2.0
 description: |
- ### Why app 2 is the best
- Because it simply is...
+ ### blob of markdown
+ More markdown
