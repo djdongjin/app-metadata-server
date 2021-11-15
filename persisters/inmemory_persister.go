@@ -19,14 +19,22 @@ func (p InMemoryPersister) Persist(metadata common.Metadata) error {
 	return nil
 }
 
-func (p InMemoryPersister) Retrieve(query string) []common.Metadata {
+func (p InMemoryPersister) Retrieve(query string) ([]common.Metadata, error) {
 	// TODO: add filtering logic.
 	res := make([]common.Metadata, 0)
-	for _, v := range p.data {
-		res = append(res, v)
+
+	subqueries, err := common.ParseQuery(query)
+	if err != nil {
+		return res, err
 	}
 
-	return res
+	for _, v := range p.data {
+		if common.ExecuteQuery(v, subqueries) {
+			res = append(res, v)
+		}
+	}
+
+	return res, nil
 }
 
 func (p InMemoryPersister) Get(title string) (common.Metadata, bool) {

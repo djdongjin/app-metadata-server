@@ -48,7 +48,12 @@ func (server *ApiServer) RetrieveMetadata(c *gin.Context) {
 		return
 	}
 
-	allMetadata := server.DataStore.Retrieve(string(queryBody))
+	allMetadata, err := server.DataStore.Retrieve(string(queryBody))
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	var res string
 	for _, md := range allMetadata {
 		res += MetadataToYamlString(md) + "\n\n"
