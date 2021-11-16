@@ -14,8 +14,8 @@ type ApiServer struct {
 	DataStore persisters.Persister
 }
 
-// PersistMetadata receives yaml-formatted raw string from POST request, converts
-// it to a Metadata object, and persists the object in the underlying storage.
+// PersistMetadata receives yaml-formatted string, converts it to a
+// Metadata object, and persists the object using persister.
 func (server *ApiServer) PersistMetadata(c *gin.Context) {
 	reqBody, err := c.GetRawData()
 	if err != nil {
@@ -34,22 +34,30 @@ func (server *ApiServer) PersistMetadata(c *gin.Context) {
 		return
 	}
 
-	_ = server.DataStore.Persist(metadata)
+	if err = server.DataStore.Persist(metadata); err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	c.String(http.StatusCreated, "Metadata persisted.")
 }
 
-// RetrieveMetadata receives a query string from POST request, and returns
-// filtered metadata to the client. Notice the query is passed to the Persister,
-// where the actual retrieval happens.
+// RetrieveMetadata receives a query string, parse it to subqueries, and returns
+// all Metadata selected by persister that matches subqueries.
 func (server *ApiServer) RetrieveMetadata(c *gin.Context) {
-	queryBody, err := c.GetRawData()
+	reqBody, err := c.GetRawData()
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	allMetadata, err := server.DataStore.Retrieve(string(queryBody))
+	subqueries, err := common.ParseQuery(string(reqBody))
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	allMetadata, err := server.DataStore.Retrieve(subqueries)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -63,8 +71,8 @@ func (server *ApiServer) RetrieveMetadata(c *gin.Context) {
 	c.String(http.StatusOK, res)
 }
 
-// GetMetadata receives a title from GET request url and returns that
-// metadata to the client.
+// GetMetadata receives a title from GET request url, get the Metadata from
+// persister, and returns it to client.
 func (server *ApiServer) GetMetadata(c *gin.Context) {
 	title := c.Param("title")
 
@@ -75,8 +83,8 @@ func (server *ApiServer) GetMetadata(c *gin.Context) {
 	}
 }
 
-// DeleteMetadata receives a title from GET request and let the Persister
-// delete that metadata, if exists.
+// DeleteMetadata receives a title from GET request url, let persister
+// delete that metadata if exists.
 func (server *ApiServer) DeleteMetadata(c *gin.Context) {
 	title := c.Param("title")
 

@@ -9,7 +9,7 @@ import (
 // Persister is the interface for storing/retrieving Metadata.
 type Persister interface {
 	Persist(common.Metadata) error
-	Retrieve(query string) ([]common.Metadata, error)
+	Retrieve([]common.SubQuery) ([]common.Metadata, error)
 	Get(title string) (common.Metadata, bool)
 	Delete(title string) (common.Metadata, bool)
 }

@@ -31,9 +31,9 @@ var validOps []string = []string{"!=", "==", "="} // orders matter!
 // divider is used to separate subqueries.
 const divider = ","
 
-// QueryError provides a formatted error with complete query string,
+// queryError returns a formatted error with the query string,
 // the subquery that has issue, and the cause.
-func QueryError(query, subquery, msg string) error {
+func queryError(query, subquery, msg string) error {
 	return fmt.Errorf("Query parsing error:\n\t-Query: %v\n\tSubQuery: %v\n\tReason: %v", query, subquery, msg)
 }
 
@@ -46,6 +46,11 @@ func ParseQuery(query string) ([]SubQuery, error) {
 	res := make([]SubQuery, 0) // assume in most cases we only has one subquery.
 
 	for _, sub := range subqueries {
+		sub = strings.Trim(sub, " ")
+		if len(sub) == 0 {
+			continue
+		}
+
 		valid := false
 		var givenKey, givenOp, givenValue string
 
@@ -53,12 +58,12 @@ func ParseQuery(query string) ([]SubQuery, error) {
 			if strings.Contains(sub, op) {
 				parts := strings.Split(sub, op)
 				if len(parts) != 2 {
-					return res, QueryError(query, sub, "more than one operator.")
+					return res, queryError(query, sub, "more than one operator.")
 				}
 
 				givenKey, givenOp, givenValue = strings.Trim(parts[0], " "), op, strings.Trim(parts[1], " ")
 				if _, ok := validFilterKeys[givenKey]; !ok {
-					return res, QueryError(query, sub, givenKey+" is not a valid key.")
+					return res, queryError(query, sub, givenKey+" is not a valid key.")
 				}
 
 				// subquery parse succeeded.
@@ -70,7 +75,7 @@ func ParseQuery(query string) ([]SubQuery, error) {
 
 		// no op matched.
 		if !valid {
-			return res, QueryError(query, sub, "no valid op is found.")
+			return res, queryError(query, sub, "no valid op is found.")
 		}
 	}
 

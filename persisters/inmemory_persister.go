@@ -19,14 +19,8 @@ func (p InMemoryPersister) Persist(metadata common.Metadata) error {
 	return nil
 }
 
-func (p InMemoryPersister) Retrieve(query string) ([]common.Metadata, error) {
-	// TODO: add filtering logic.
+func (p InMemoryPersister) Retrieve(subqueries []common.SubQuery) ([]common.Metadata, error) {
 	res := make([]common.Metadata, 0)
-
-	subqueries, err := common.ParseQuery(query)
-	if err != nil {
-		return res, err
-	}
 
 	for _, v := range p.data {
 		if common.ExecuteQuery(v, subqueries) {
