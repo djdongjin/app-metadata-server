@@ -56,6 +56,6 @@ func (p *InMemoryPersister) Delete(title string) (common.Metadata, bool) {
 	}
 }
 
-func NewInMemoryPersister() (*InMemoryPersister, error) {
+func NewInMemoryPersister() (Persister, error) {
 	return &InMemoryPersister{data: make(map[string]common.Metadata)}, nil
 }
