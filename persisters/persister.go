@@ -18,7 +18,7 @@ type Persister interface {
 func New(tp string) (Persister, error) {
 	switch tp {
 	case "InMemoryPersister":
-		return InMemoryPersister{data: make(map[string]common.Metadata)}, nil
+		return NewInMemoryPersister()
 	default:
 		return nil, fmt.Errorf("%s type doesn't exist", tp)
 	}
