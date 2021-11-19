@@ -23,15 +23,17 @@ Among the four endpoints, `persist` and `retrieve` are `POST` requests, while th
 > See the shell file to see how each request is constructed and sent by `curl`.
 
 ```bash
-# persist
-./run.sh persist filename.yaml
+# persist given a yaml file.
+./run.sh persist testdata/valid1.yaml
 
-# retrieve
-./run.sh retrieve filename.yaml
+# retrieve give a query string.
+./run.sh retrieve "title=Valid App 1,maintainers.name=firstmaintainer app1"
 
-# get
-./run.sh get title
+# get given a title
+./run.sh get Valid%20App%201
 
-# delete
-./run.sh delete title
+# delete given a title
+./run.sh delete Valid%20App%201
 ```
+
+> Title need to be encoded so that it can be put as part of an url.
