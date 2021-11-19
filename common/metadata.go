@@ -18,48 +18,40 @@ type Metadata struct {
 	Description string
 }
 
-func (m Maintainer) Validate() (err error) {
-	if err = NotEmpty("Name", m.Name); err != nil {
-		return
+func (m Maintainer) Validate() error {
+	errs := []error{
+		NotEmpty("Name", m.Name),
+		ValidEmail("Email", m.Email),
 	}
 
-	if err = ValidEmail("Email", m.Email); err != nil {
-		return
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (m Metadata) Validate() (err error) {
-	// Validate string existance
-	if err = NotEmpty("Title", m.Title); err != nil {
-		return
-	}
-	if err = NotEmpty("Version", m.Version); err != nil {
-		return
-	}
-	if err = NotEmpty("Company", m.Company); err != nil {
-		return
-	}
-	if err = NotEmpty("Website", m.Website); err != nil {
-		return
-	}
-	if err = NotEmpty("Source", m.Source); err != nil {
-		return
-	}
-	if err = NotEmpty("License", m.License); err != nil {
-		return
-	}
-	if err = NotEmpty("Description", m.Description); err != nil {
-		return
+func (m Metadata) Validate() error {
+	errs := []error{
+		// Validate string existance
+		NotEmpty("Title", m.Title),
+		NotEmpty("Version", m.Version),
+		NotEmpty("Company", m.Company),
+		NotEmpty("Website", m.Website),
+		NotEmpty("Source", m.Source),
+		NotEmpty("License", m.License),
+		NotEmpty("Description", m.Description),
+		// Validate urls
+		ValidUrl("Website", m.Website),
+		ValidUrl("Source", m.Source),
 	}
 
-	// Validate urls
-	if err = ValidUrl("Website", m.Website); err != nil {
-		return
-	}
-	if err = ValidUrl("Source", m.Source); err != nil {
-		return
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
 	}
 
 	// Validate maintainers
@@ -68,7 +60,7 @@ func (m Metadata) Validate() (err error) {
 	}
 
 	for _, maintainer := range m.Maintainers {
-		if err = maintainer.Validate(); err != nil {
+		if err := maintainer.Validate(); err != nil {
 			return err
 		}
 	}
